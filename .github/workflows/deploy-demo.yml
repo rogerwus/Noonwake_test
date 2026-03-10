@@ -7,7 +7,11 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, demo, ubuntu24, docker]
+    runs-on:
+      - self-hosted
+      - demo
+      - ubuntu24
+      - docker
 
     steps:
       - name: Checkout
@@ -15,19 +19,17 @@ jobs:
 
       - name: Prepare app directory
         run: |
-          sudo mkdir -p /opt/demo-apps/noonwake-test
-          sudo chown -R deploy:deploy /opt/demo-apps/noonwake-test
+          mkdir -p "$HOME/demo-apps/noonwake-test"
+          rm -rf "$HOME/demo-apps/noonwake-test/site"
 
-      - name: Sync files
+      - name: Copy files
         run: |
-          rsync -av --delete \
-            --exclude '.git' \
-            --exclude '.github' \
-            ./ /opt/demo-apps/noonwake-test/
+          cp docker-compose.yml "$HOME/demo-apps/noonwake-test/"
+          cp -r site "$HOME/demo-apps/noonwake-test/"
 
       - name: Deploy
         run: |
-          cd /opt/demo-apps/noonwake-test
+          cd "$HOME/demo-apps/noonwake-test"
           docker compose up -d --remove-orphans
 
       - name: Check
