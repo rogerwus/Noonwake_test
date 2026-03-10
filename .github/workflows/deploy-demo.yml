@@ -1,0 +1,35 @@
+name: Deploy Demo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, demo, ubuntu24, docker]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare app directory
+        run: |
+          sudo mkdir -p /opt/demo-apps/noonwake-test
+          sudo chown -R deploy:deploy /opt/demo-apps/noonwake-test
+
+      - name: Sync files
+        run: |
+          rsync -av --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            ./ /opt/demo-apps/noonwake-test/
+
+      - name: Deploy
+        run: |
+          cd /opt/demo-apps/noonwake-test
+          docker compose up -d --remove-orphans
+
+      - name: Check
+        run: |
+          docker ps --filter name=noonwake-test
