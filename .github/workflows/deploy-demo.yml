@@ -63,4 +63,4 @@ jobs:
 
       - name: Smoke test
         run: |
-          curl -fsS "http://127.0.0.1:$APP_PORT/index.html" > /dev/null
+          curl -fsS "http://127.0.0.1:$APP_PORT/" > /dev/null
