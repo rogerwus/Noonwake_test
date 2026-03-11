@@ -49,6 +49,7 @@ jobs:
 
       - name: Copy files
         run: |
+          cp Dockerfile "/opt/demo-apps/$APP_SLUG/"
           cp docker-compose.yml "/opt/demo-apps/$APP_SLUG/"
           cp -r site "/opt/demo-apps/$APP_SLUG/"
 
