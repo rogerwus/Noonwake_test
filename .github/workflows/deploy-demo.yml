@@ -9,9 +9,6 @@ concurrency:
   group: demo-deploy
   cancel-in-progress: true
 
-env:
-  APP_DIR: ${{ github.workspace }}/../demo-apps/noonwake-test
-
 jobs:
   deploy:
     runs-on:
@@ -26,17 +23,17 @@ jobs:
 
       - name: Prepare app directory
         run: |
-          mkdir -p "$HOME/demo-apps/noonwake-test"
-          rm -rf "$HOME/demo-apps/noonwake-test/site"
+          mkdir -p /opt/demo-apps/noonwake-test
+          rm -rf /opt/demo-apps/noonwake-test/site
 
       - name: Copy files
         run: |
-          cp docker-compose.yml "$HOME/demo-apps/noonwake-test/"
-          cp -r site "$HOME/demo-apps/noonwake-test/"
+          cp docker-compose.yml /opt/demo-apps/noonwake-test/
+          cp -r site /opt/demo-apps/noonwake-test/
 
       - name: Deploy
         run: |
-          cd "$HOME/demo-apps/noonwake-test"
+          cd /opt/demo-apps/noonwake-test
           docker compose up -d --remove-orphans
 
       - name: Check container
@@ -45,4 +42,4 @@ jobs:
 
       - name: Smoke test
         run: |
-          curl -fsS http://127.0.0.1:3001 > /dev/null
+          curl -fsS http://127.0.0.1:3001/index.html > /dev/null
