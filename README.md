@@ -1,36 +1,33 @@
 # Noonwake Demo Template
 
-Minimal demo template for `demo.noonwake.ai`.
+Baseline repo for fast demo deployments.
 
-## Purpose
-- Fast MVP / landing page demos
-- Auto deploy from GitHub Actions
-- Hosted on the Noonwake demo server
+## What this repo gives you
+- static demo site
+- Docker Compose runtime
+- GitHub Actions auto deploy
+- self-hosted runner delivery to `demo.noonwake.ai`
 
-## Stack
-- Static HTML
-- Nginx
-- Docker Compose
-- GitHub Actions (self-hosted runner)
-- Caddy on the demo server
+## Repo variables
+Set these in GitHub Actions Variables if needed:
+- `APP_SLUG` (default: `noonwake-test`)
+- `APP_PORT` (default: `3001`)
+- `APP_DOMAIN` (default: `demo.noonwake.ai`)
 
-## Repo structure
-- `site/` — static files
-- `docker-compose.yml` — local/demo runtime
-- `.github/workflows/deploy-demo.yml` — deploy pipeline
-
-## Deploy behavior
-Every push to `main` triggers:
-1. checkout on the self-hosted runner
-2. copy files to the demo app directory
-3. `docker compose up -d`
-4. demo update on `https://demo.noonwake.ai`
-
-## Local preview
+## Local run
 ```bash
+cp .env.example .env
 docker compose up -d
 open http://127.0.0.1:3001
 ```
 
-## Notes
-This repo is the baseline template for future Noonwake demos.
+## Deploy flow
+Push to `main`:
+1. runner checks out repo
+2. files sync to `/opt/demo-apps/<APP_SLUG>`
+3. `.env` is written from repo variables
+4. `docker compose up -d`
+5. smoke test runs against local port
+
+## Purpose
+Use this as the starting point for new MVP demos, landing pages, and lightweight product tests.

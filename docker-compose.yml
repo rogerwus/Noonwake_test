@@ -1,9 +1,9 @@
 services:
   web:
     image: nginx:alpine
-    container_name: noonwake-test
+    container_name: ${APP_SLUG:-noonwake-test}
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3001:80"
+      - "127.0.0.1:${APP_PORT:-3001}:80"
     volumes:
       - ./site:/usr/share/nginx/html:ro

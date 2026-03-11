@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: demo-deploy
@@ -17,29 +18,49 @@ jobs:
       - ubuntu24
       - docker
 
+    env:
+      APP_SLUG: ${{ vars.APP_SLUG }}
+      APP_PORT: ${{ vars.APP_PORT }}
+      APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Resolve config
+        run: |
+          echo "APP_SLUG=${APP_SLUG:-noonwake-test}" >> "$GITHUB_ENV"
+          echo "APP_PORT=${APP_PORT:-3001}" >> "$GITHUB_ENV"
+          echo "APP_DOMAIN=${APP_DOMAIN:-demo.noonwake.ai}" >> "$GITHUB_ENV"
+
       - name: Prepare app directory
         run: |
-          mkdir -p /opt/demo-apps/noonwake-test
-          rm -rf /opt/demo-apps/noonwake-test/site
+          sudo mkdir -p "/opt/demo-apps/$APP_SLUG"
+          sudo chown -R deploy:deploy "/opt/demo-apps/$APP_SLUG"
+          rm -rf "/opt/demo-apps/$APP_SLUG/site"
+
+      - name: Write runtime env
+        run: |
+          cat > "/opt/demo-apps/$APP_SLUG/.env" <<EOF
+          APP_SLUG=$APP_SLUG
+          APP_PORT=$APP_PORT
+          APP_DOMAIN=$APP_DOMAIN
+          EOF
 
       - name: Copy files
         run: |
-          cp docker-compose.yml /opt/demo-apps/noonwake-test/
-          cp -r site /opt/demo-apps/noonwake-test/
+          cp docker-compose.yml "/opt/demo-apps/$APP_SLUG/"
+          cp -r site "/opt/demo-apps/$APP_SLUG/"
 
       - name: Deploy
         run: |
-          cd /opt/demo-apps/noonwake-test
-          docker compose up -d --remove-orphans
+          cd "/opt/demo-apps/$APP_SLUG"
+          docker compose --env-file .env up -d --remove-orphans
 
       - name: Check container
         run: |
-          docker ps --filter name=noonwake-test
+          docker ps --filter "name=$APP_SLUG"
 
       - name: Smoke test
         run: |
-          curl -fsS http://127.0.0.1:3001/index.html > /dev/null
+          curl -fsS "http://127.0.0.1:$APP_PORT/index.html" > /dev/null
