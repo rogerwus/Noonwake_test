@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+concurrency:
+  group: demo-deploy
+  cancel-in-progress: true
+
+env:
+  APP_DIR: ${{ github.workspace }}/../demo-apps/noonwake-test
+
 jobs:
   deploy:
     runs-on:
@@ -32,6 +39,10 @@ jobs:
           cd "$HOME/demo-apps/noonwake-test"
           docker compose up -d --remove-orphans
 
-      - name: Check
+      - name: Check container
         run: |
           docker ps --filter name=noonwake-test
+
+      - name: Smoke test
+        run: |
+          curl -fsS http://127.0.0.1:3001 > /dev/null
