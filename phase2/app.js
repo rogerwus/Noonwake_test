@@ -1177,7 +1177,7 @@
     trackPlaytestMilestones(guideState, dailyState, signInState, bridge, bossState, todayDailyBoss, rewardState);
 
     updateResourceBar(wallet);
-    renderHome(bridge, dailyState, signInState, gachaState, wallet, todayFortune, todayDailyBoss, bossState, opsState, commerceState, activityState, rewardState, analyticsState, guideState, boards);
+    renderHome(bridge, dailyState, signInState, gachaState, wallet, todayFortune, todayDailyBoss, bossState, opsState, commerceState, activityState, rewardState, analyticsState, guideState, boards, equipmentState);
     renderGacha(gachaState, wallet, dailyState, opsState, rewardState, guideState, todayDailyBoss);
     renderAdventure(bridge, todayFortune, guideState, todayDailyBoss);
     renderGear(bridge, wallet, guideState, equipmentState, boards, todayDailyBoss, bossState);
@@ -1809,50 +1809,23 @@
     }
   }
 
-  function renderHome(bridge, dailyState, signInState, gachaState, wallet, dailyFortune, todayDailyBoss, bossState, opsState, commerceState, activityState, rewardState, analyticsState, guideState, boards) {
+  function renderHome(bridge, dailyState, signInState, gachaState, wallet, dailyFortune, todayDailyBoss, bossState, opsState, commerceState, activityState, rewardState, analyticsState, guideState, boards, equipmentState) {
     var claimableCount = countClaimableTasks(dailyState);
     var offerSurface = buildOfferSurface(opsState, bridge, dailyState, gachaState);
     var competitionFocus = buildCompetitionFocus(boards || { total: [], same_day_master: [], today_boss: [] }, todayDailyBoss, bossState);
-    var homeModules = getLaunchPrepConfigValue("surfaces.home.modules", {});
     var nextSessionPlan = buildNextSessionPlan(dailyState, signInState, opsState, commerceState, activityState, todayDailyBoss, bossState, guideState, boards);
 
     el.home.innerHTML = [
-      "<h2 class='section-title'>Home / 主城面板</h2>",
-      renderGuideNextActionTile(guideState, dailyFortune, todayDailyBoss),
+      "<div class='game-home-container'>",
+      renderGuideNextActionTile(bridge, wallet, guideState, dailyFortune, todayDailyBoss, equipmentState, bossState),
+      renderFirstSessionRail(guideState, dailyFortune, todayDailyBoss, equipmentState, bossState),
+      "<div class='game-home-dashboard'>",
       renderTodayGoalsPanel(dailyState, signInState, gachaState, opsState, commerceState, activityState, todayDailyBoss, bossState, boards, guideState, dailyFortune),
-      "<div class='grid cols-2 home-priority-grid' style='margin-top:10px'>",
-      renderLatestBattleCard(bridge),
-      renderReturnReasonsTile("home", dailyState, opsState, commerceState, activityState, todayDailyBoss, bossState, boards),
-      renderCompetitionPulseTile("home", boards, todayDailyBoss, bossState),
-      renderTomorrowPreviewTile(nextSessionPlan),
-      "</div>",
-      "<div class='grid cols-2'>",
-      renderRewardSpotlight(rewardState, ["daily_login", "sign_in", "daily_boss", "free_draw", "task", "monthly_card", "first_purchase", "event"], "最新到账"),
-      renderFortuneTile(dailyFortune),
-      renderDailyLoginTile(dailyState, signInState, opsState),
-      "</div>",
-      "<div class='tile' style='margin-top:10px'>",
-      "<h3>每日任务奖励</h3>",
-      "<div class='task-grid'>" + renderDailyTasks(dailyState) + "</div>",
-      "<p class='meta'>今日抽卡次数: " + countTodayGacha(gachaState) +
-        " | 完成 " + dailyState.completedCount + "/3 | 已领取 " + dailyState.claimedCount + "/3 | 可领取 " + claimableCount + " 个</p>",
-      "<div class='button-row'>" + renderGuideButtons(guideState, dailyFortune, todayDailyBoss, "home") + "</div>",
-      "</div>",
       "<div class='grid cols-2' style='margin-top:10px'>",
-      renderHomeLoopTile(dailyFortune, todayDailyBoss, bossState, guideState),
-      renderPlaytestWatchTile(dailyState, signInState, guideState, rewardState, analyticsState, bossState, todayDailyBoss),
-      renderOfferSpotlightTile(offerSurface, opsState),
-      (homeModules.commerceOps === false ? "" : renderCommerceReadinessTile(commerceState, opsState, rewardState)),
-      (homeModules.analyticsOps === false ? "" : renderAnalyticsOpsTile(analyticsState)),
+      renderHomeBuildSnapshot(bridge, equipmentState, wallet, guideState),
+      renderLatestBattleCard(bridge),
       "</div>",
-      (competitionFocus ? renderShareReadySurface("home", competitionFocus.boardType, boards[competitionFocus.boardType] || [], competitionFocus.insight, todayDailyBoss, bossState) : ""),
-      (homeModules.offerOverview === false ? "" : "<div class='tile' style='margin-top:10px'><h3>运营入口总览</h3><div class='offer-grid'>" + renderOfferCards(opsState, offerSurface.order) + "</div></div>"),
-      (homeModules.eventOverview === false ? "" : "<div class='tile' style='margin-top:10px'><h3>活动入口 / 兑换</h3><div class='offer-grid'>" + renderEventCards(todayKey(), activityState, todayDailyBoss, bossState) + "</div></div>"),
-      "<div class='tile' style='margin-top:10px'>",
-      "<h3>今日资源结算</h3>",
-      "<p>灵石 " + wallet.spiritStone + " · 抽卡券 " + wallet.drawTickets + " · 材料 " + wallet.materials + "</p>",
-      "<p class='meta'>启用 npm start 时奖励 / 消耗优先走后端钱包与奖励账本；仅静态模式才回退到本地占位。</p>",
-      "<div class='list reward-history'>" + renderRewardHistory(rewardState, 3) + "</div>",
+      "</div>",
       "</div>"
     ].join("");
 
@@ -2064,16 +2037,21 @@
 
   function renderTodayGoalsPanel(dailyState, signInState, gachaState, opsState, commerceState, activityState, todayDailyBoss, bossState, boards, guideState, dailyFortune) {
     var goals = buildTodayGoals(dailyState, signInState, gachaState, opsState, commerceState, activityState, todayDailyBoss, bossState, boards, guideState, dailyFortune);
+    var primaryGoal = goals[0] || null;
+    var secondaryGoals = goals.slice(1, 5);
 
     return [
-      "<div class='tile today-goals-panel is-featured' style='margin-top:10px'>",
-      "<p class='eyebrow'>Today Goals</p>",
-      "<h3>今天先做这几步</h3>",
-      "<p class='meta'>先收奖励，再补当前 build，最后去 Boss / 榜单验收，避免一屏里什么都想点。</p>",
+      "<div class='tile today-goals-panel is-featured mission-board' style='margin-top:10px'>",
+      "<p class='eyebrow'>Mission Board</p>",
+      "<h3>第一次来先照着任务板走</h3>",
+      "<p class='meta'>左边是现在立刻做的主任务，右边是接下来的承接任务。先完成一张，再去下一张。</p>",
       renderTodayGoalSummaryStrip(goals),
-      "<div class='today-goals-grid'>" + goals.map(function (goal) {
-        return renderTodayGoalCard(goal);
-      }).join("") + "</div>",
+      "<div class='mission-board-grid'>" +
+        (primaryGoal ? renderTodayGoalCard(primaryGoal, true) : "") +
+        "<div class='mission-board-side'>" + secondaryGoals.map(function (goal) {
+          return renderTodayGoalCard(goal, false);
+        }).join("") + "</div>" +
+      "</div>",
       "</div>"
     ].join("");
   }
@@ -2257,13 +2235,14 @@
     });
   }
 
-  function renderTodayGoalCard(goal) {
+  function renderTodayGoalCard(goal, isPrimary) {
     return [
-      "<div class='today-goal-card'>",
+      "<div class='today-goal-card" + (isPrimary ? " is-primary" : "") + "'>",
       "<p class='eyebrow'>" + safe(goal.tag || "今日") + "</p>",
       "<h4>" + safe(goal.title || "今日动作") + "</h4>",
       "<p>" + safe(goal.summary || "-") + "</p>",
       (goal.meta ? "<p class='meta'>" + safe(goal.meta) + "</p>" : ""),
+      (isPrimary ? "<p class='meta'>做完后：继续右侧承接任务，最后去 Boss / Rank 验收。</p>" : ""),
       "<div class='button-row'>" + (goal.actionHtml || "") + "</div>",
       "</div>"
     ].join("");
@@ -2636,32 +2615,131 @@
     ].join("");
   }
 
-  function renderGuideNextActionTile(guideState, dailyFortune, todayDailyBoss) {
+  function renderGuideNextActionTile(bridge, wallet, guideState, dailyFortune, todayDailyBoss, equipmentState, bossState) {
     var currentStep = getGuideStep(guideState && guideState.currentStepId);
     var nextStep = currentStep && currentStep.id !== "loop_repeat" ? getGuideNextStep(currentStep.id) : null;
-    var heading = guideState && guideState.currentStepId === "loop_repeat"
-      ? "首轮动作链已跑通"
-      : "What Next / 下一步只点这个";
-    var body = currentStep
-      ? currentStep.description
-      : "先从免费抽开始，再把命器穿上、强化、刷图、Boss、看榜。";
+    var profile = bridge && bridge.profileSnapshot ? bridge.profileSnapshot : {};
+    var equipmentSummary = equipmentState && equipmentState.summary ? equipmentState.summary : null;
+    var bossRecord = getBossRecordForDate(bossState, todayKey(), todayDailyBoss);
+    
+    var className = profile.className || "未定职业";
+    var element = profile.dayMasterElement || "未定命主";
+    var totalPower = equipmentSummary ? equipmentSummary.totalPower : (normalizeNumber(profile.powerScore, 0) || 0);
+    var buildTag = equipmentSummary && equipmentSummary.buildTag ? equipmentSummary.buildTag : "起步中";
+
+    var stepTitle = currentStep ? currentStep.label : "先领免费抽";
+    var stepDesc = currentStep ? currentStep.description : "开始你的第一步。";
+    var nextStepText = nextStep ? nextStep.label : "回 Rank / Boss 验收";
+    
+    var buttonHtml = "";
+    if (currentStep) {
+      var btnTarget = currentStep.primaryTab;
+      var btnParam = currentStep.primaryContext || "";
+      buttonHtml = "<button type='button' class='game-action-btn' data-jump-tab='" + safe(btnTarget) + "' data-map-id='" + safe(btnParam) + "'>前往任务: " + safe(stepTitle) + "</button>";
+    } else {
+      buttonHtml = "<button type='button' class='game-action-btn' data-jump-tab='gacha'>前往抽卡</button>";
+    }
 
     return [
-      "<div class='tile loop-card is-featured surface-hero home-hero-card is-live-surface' style='margin-top:10px'>",
-      "<p class='eyebrow'>新手主路径</p>",
-      "<h3>" + safe(heading) + "</h3>",
-      renderMomentPills([
-        { label: guideState ? ("主线 " + guideState.completedCount + "/" + GUIDE_STEPS.length) : "主线起步", tone: "is-live" },
-        { label: currentStep ? currentStep.primaryLabel : "先免费抽", tone: "is-recommended" },
-        { label: todayDailyBoss ? todayDailyBoss.boss.name : "今日 Boss", tone: "is-preview" }
-      ], "is-compact"),
-      "<p class='hero-copy'>" + safe(body) + "</p>",
-      (guideState ? "<p class='meta'>进度：" + safe(guideState.progressText) + " · 已完成 " + guideState.completedCount + "/" + GUIDE_STEPS.length + " 个关键动作</p>" : ""),
-      "<p class='meta'>现在最该点：" + safe(currentStep ? currentStep.primaryLabel : "去免费抽") + "</p>",
-      "<p class='meta'>做完后：" + safe(nextStep ? nextStep.label : "回榜单 / 主城验收这轮提升") + "</p>",
-      (guideState ? "<div class='status-row'>" + renderGuideProgressPills(guideState) + "</div>" : ""),
-      (guideState ? "<div class='guide-list'>" + renderGuideChecklist(guideState, 2) + "</div>" : ""),
-      "<div class='button-row'>" + renderGuideButtons(guideState, dailyFortune, todayDailyBoss, "home") + "</div>",
+      "<div class='game-hero-banner tile'>",
+      "  <div class='hero-profile'>",
+      "    <div class='hero-avatar'></div>",
+      "    <div class='hero-info'>",
+      "      <h2 class='hero-name'>" + safe(className) + " · " + safe(element) + "</h2>",
+      "      <p class='hero-power'>战斗力 " + totalPower + " <span class='hero-build'>[" + safe(buildTag) + "]</span></p>",
+      "    </div>",
+      "  </div>",
+      "  <div class='hero-quest'>",
+      "    <p class='quest-eyebrow'>当前主线任务</p>",
+      "    <h3 class='quest-title'>" + safe(stepTitle) + "</h3>",
+      "    <p class='quest-desc'>" + safe(stepDesc) + "</p>",
+      "    <p class='quest-next'>做完后去哪：<strong>" + safe(nextStepText) + "</strong></p>",
+      "  </div>",
+      "  <div class='hero-action'>",
+      "    " + buttonHtml,
+      "  </div>",
+      "</div>"
+    ].join("");
+  }
+
+  function renderFirstSessionRail(guideState, dailyFortune, todayDailyBoss, equipmentState, bossState) {
+    var recommendMapId = dailyFortune && dailyFortune.recommendedMapId ? dailyFortune.recommendedMapId : activeMapId;
+    var bossMapId = todayDailyBoss && todayDailyBoss.mapId ? todayDailyBoss.mapId : activeMapId;
+    var currentStep = getGuideStep(guideState && guideState.currentStepId);
+    
+    var groups = [
+      {
+        id: "collect",
+        index: "1",
+        title: "资源与抽卡",
+        summary: "领收益拿资源，先去卡池单抽。",
+        target: "gacha",
+        param: ""
+      },
+      {
+        id: "build",
+        index: "2",
+        title: "配置与强化",
+        summary: "换上新装备，强化核心装备提升战力。",
+        target: "gear",
+        param: ""
+      },
+      {
+        id: "fight",
+        index: "3",
+        title: "实战与检验",
+        summary: "下本刷图，挑战今日 Boss 验证 Build。",
+        target: currentStep && currentStep.primaryTab === "boss" ? "boss" : "adventure",
+        param: currentStep && currentStep.primaryTab === "boss" ? bossMapId : recommendMapId
+      },
+      {
+        id: "rank",
+        index: "4",
+        title: "打榜与复盘",
+        summary: "查看排行榜差距，决定下轮要补强什么。",
+        target: "leaderboard",
+        param: ""
+      }
+    ];
+    
+    var railHtml = groups.map(function(g) {
+      return "<div class='game-rail-node' data-jump-tab='" + safe(g.target) + "' data-map-id='" + safe(g.param) + "'>" +
+             "  <div class='node-index'><span>" + g.index + "</span></div>" +
+             "  <div class='node-content'>" +
+             "    <h4 class='node-title'>" + safe(g.title) + "</h4>" +
+             "    <p class='node-desc'>" + safe(g.summary) + "</p>" +
+             "  </div>" +
+             "</div>";
+    }).join("");
+
+    return [
+      "<div class='game-onboarding-rail tile'>",
+      "  <h3 class='rail-header'>新任主理人必修课 (First Session)</h3>",
+      "  <p class='rail-sub'>按照此顺序游玩，形成完整循环链条：</p>",
+      "  <div class='rail-track'>",
+      "    " + railHtml,
+      "  </div>",
+      "</div>"
+    ].join("");
+  }
+
+  function renderHomeBuildSnapshot(bridge, equipmentState, wallet, guideState) {
+    var profile = bridge && bridge.profileSnapshot ? bridge.profileSnapshot : {};
+    var summary = equipmentState && equipmentState.summary ? equipmentState.summary : null;
+    var currentStep = getGuideStep(guideState && guideState.currentStepId);
+
+    return [
+      "<div class='tile home-build-snapshot is-featured'>",
+      "<p class='eyebrow'>Avatar State</p>",
+      "<h3>你现在的角色状态</h3>",
+      "<p>" + safe((profile.className || "未定职业") + " · " + (profile.dayMasterElement || "未定命主")) + "</p>",
+      "<div class='decision-grid home-build-grid'>" +
+        "<div class='decision-card'><span>总战力</span><strong>" + safe(String(summary ? summary.totalPower : normalizeNumber(profile.powerScore, 0))) + "</strong></div>" +
+        "<div class='decision-card'><span>Build 标签</span><strong>" + safe(summary && summary.buildTag ? summary.buildTag : "尚未成型") + "</strong></div>" +
+        "<div class='decision-card'><span>强化进度</span><strong>" + safe(summary ? ("总强化 +" + summary.totalEnhancementLevel) : "还没强化") + "</strong></div>" +
+      "</div>",
+      "<p class='meta'>当前引导：" + safe(currentStep ? currentStep.label : "先去抽卡") + " · 资源池：灵石 " + wallet.spiritStone + " / 券 " + wallet.drawTickets + " / 材料 " + wallet.materials + "</p>",
+      "<div class='button-row'><button type='button' class='cta' data-jump-tab='gear'>打开 Gear</button><button type='button' data-jump-tab='gacha'>回抽卡补件</button></div>",
       "</div>"
     ].join("");
   }
@@ -4281,6 +4359,7 @@
     el.gacha.innerHTML = [
       "<h2 class='section-title'>Gacha / 抽卡页</h2>",
       "<p class='muted'>先把免费抽拿掉，再决定要不要补抽。当前抽卡券：" + wallet.drawTickets + (costsApply ? "（后端模式会消耗）" : "（静态模式为本地占位）") + "。</p>",
+      renderGachaStarterHero(guideState, dailyState, latest, todayDailyBoss, wallet),
       renderRewardSpotlight(rewardState, ["gacha", "free_draw"], "抽卡回响"),
       renderSurfaceLoopTile("gacha", guideState, todayDailyBoss),
       "<div class='grid cols-2' style='margin-top:10px'>",
@@ -4775,6 +4854,7 @@
       el.gear.innerHTML = [
         "<h2 class='section-title'>Gear / 配装页</h2>",
         "<p class='muted'>当前 Gear 由后端主路径持久化；抽到命器后可直接换上，强化消耗直接走后端钱包（灵石 / 材料）。</p>",
+        renderGearBuildHero(profile, equipmentState, wallet, guideState, todayDailyBoss),
         renderRewardSpotlight(rewardState, ["gear_equip", "enhancement"], "配装变化"),
         renderSurfaceLoopTile("gear", guideState, null),
         "<div class='tile'><h3>当前 build 摘要</h3><p class='meta'>" + fateMeta.join(" | ") + "</p>" +
@@ -4865,6 +4945,54 @@
     ].join("");
 
     bindScopedTabJumps(el.gear);
+  }
+
+  function renderGachaStarterHero(guideState, dailyState, latest, todayDailyBoss, wallet) {
+    var currentStep = getGuideStep(guideState && guideState.currentStepId);
+    var freeDrawDone = !!(dailyState && dailyState.specialClaims && dailyState.specialClaims.freeDraw);
+
+    return [
+      "<div class='tile is-featured surface-hero gacha-start-hero " + (freeDrawDone ? "is-preview-surface" : "is-live-surface") + "' style='margin-top:10px'>",
+      "<p class='eyebrow'>Gacha Flow</p>",
+      "<h3>抽卡页只负责两件事：先抽，再去 Gear</h3>",
+      renderMomentPills([
+        { label: freeDrawDone ? "今日免费抽已完成" : "Step 1 · 先免费抽", tone: freeDrawDone ? "is-live" : "is-recommended" },
+        { label: "Step 2 · 去 Gear 换装", tone: "is-preview" },
+        { label: todayDailyBoss ? ("随后挑战 " + todayDailyBoss.boss.name) : "随后去 Boss", tone: "is-preview" }
+      ], "is-compact"),
+      "<p class='hero-copy'>别在这里停太久。第一次来只要把免费抽处理掉，再看有没有新件能直接穿上。</p>",
+      renderDecisionGrid([
+        { label: "当前引导", text: currentStep ? currentStep.label : "先领免费抽" },
+        { label: "抽卡券", text: String(wallet.drawTickets) + " 张" },
+        { label: "最新结果", text: latest ? (latest.name + " · " + latest.rarity) : "还没出货" }
+      ], "gacha-flow-grid"),
+      "</div>"
+    ].join("");
+  }
+
+  function renderGearBuildHero(profile, equipmentState, wallet, guideState, todayDailyBoss) {
+    var summary = equipmentState && equipmentState.summary ? equipmentState.summary : null;
+    var currentStep = getGuideStep(guideState && guideState.currentStepId);
+
+    return [
+      "<div class='tile is-featured surface-hero gear-build-hero is-live-surface' style='margin-top:10px'>",
+      "<p class='eyebrow'>Build Forge</p>",
+      "<h3>Gear 页负责把抽到的东西变成可打的 build</h3>",
+      renderMomentPills([
+        { label: safe((profile.className || "职业未定") + " · " + (profile.dayMasterElement || "命主未定")), tone: "is-live" },
+        { label: summary ? ("总战力 " + summary.totalPower) : "等待 build", tone: "is-recommended" },
+        { label: todayDailyBoss ? ("下一站 " + todayDailyBoss.boss.name) : "下一站 Boss", tone: "is-preview" }
+      ], "is-compact"),
+      renderDecisionGrid([
+        { label: "当前 build", text: summary && summary.buildTag ? summary.buildTag : "先换装成型" },
+        { label: "强化进度", text: summary ? ("总强化 +" + summary.totalEnhancementLevel) : "先做第一次强化" },
+        { label: "现在做什么", text: currentStep ? currentStep.label : "先穿上第一件命器" },
+        { label: "资源", text: "灵石 " + wallet.spiritStone + " · 材料 " + wallet.materials },
+        { label: "什么时候去 Adventure", text: "换装后，缺材料或缺掉落时" },
+        { label: "什么时候去 Boss / Rank", text: "强化一次后，或 build 明显变化后" }
+      ], "home-command-grid"),
+      "</div>"
+    ].join("");
   }
 
   function renderEnhancedGearRows(equipmentState, wallet) {

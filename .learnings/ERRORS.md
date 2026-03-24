@@ -38,6 +38,7 @@
 - Context: practical smoke checks for the competition/share-card slice in `life-rpg`
 - Failure: starting `node server.js` inside the sandbox failed with `listen EPERM` on `0.0.0.0:8787`.
 - Fix: rerun the local server with escalated permissions before doing curl-based smoke checks.
+- Reconfirmed on 2026-03-24 during the `phase2` front-end carry rework: the same sandbox restriction still blocks local smoke startup, so browser validation should jump straight to an escalated server run.
 - See Also: `server.js`, `README.md`
 
 ## 2026-03-18 playtest polish patch anchors
@@ -80,6 +81,13 @@
 - Failure: a repo-local `node <<'NODE'` smoke script used `require("playwright")`, but the package is only available as a global CLI on the host, so module resolution failed inside the repo runtime.
 - Fix: log the failure immediately, then rerun smoke validation through the host Playwright CLI / global launcher instead of assuming a local dependency.
 - See Also: `README.md`, `phase2/app.js`
+
+## 2026-03-24 phase2 smoke playwright temp dir sandbox
+- Status: fixed in same session
+- Context: frontend carry rework smoke validation for `life-rpg`
+- Failure: Playwright Python launch against local `/phase2/` failed inside the sandbox because browser startup needed a writable temp dir under `/var/folders/.../playwright-artifacts-*` and hit `EPERM`.
+- Fix: after logging the failure, rerun the browser smoke command with escalated permissions instead of trying to force Playwright through the read-only sandbox.
+- See Also: `.learnings/ERRORS.md`, `phase2/app.js`
 
 ## 2026-03-21 visual trust repair patch anchors
 - Status: fixed in same session
