@@ -1,0 +1,159 @@
+:root {
+  --bg: #0f1318;
+  --panel: #1a2028;
+  --text: #e7edf5;
+  --muted: #99a6b7;
+  --line: #2e3a49;
+  --accent: #f2c14f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "PingFang SC", "Noto Sans SC", sans-serif;
+  background: radial-gradient(circle at 20% 10%, #202a35, var(--bg) 55%);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 24px;
+}
+
+.panel {
+  background: color-mix(in oklab, var(--panel), black 8%);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+h3 {
+  margin: 12px 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(100px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input,
+select,
+button {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #0f151c;
+  color: var(--text);
+  padding: 8px;
+}
+
+button {
+  cursor: pointer;
+  background: linear-gradient(120deg, #2a3646, #1f2733);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-like {
+  display: inline-block;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: linear-gradient(120deg, #2a3646, #1f2733);
+  color: var(--text);
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.output {
+  white-space: pre-wrap;
+  background: #0d1218;
+  border: 1px solid #232f3d;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  min-height: 64px;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+}
+
+.item {
+  border: 1px solid #293644;
+  background: #111923;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.item strong {
+  color: var(--accent);
+}
+
+.log {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #293644;
+  background: #0d1218;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.battle-controls {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.return-entry {
+  margin-top: 10px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .form-grid,
+  .kv {
+    grid-template-columns: 1fr 1fr;
+  }
+}

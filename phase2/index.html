@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Life RPG Phase 2 / Mobile Polish Pack</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23131d2c'/%3E%3Cpath d='M20 18h8v28h16v-8h8v16H20z' fill='%23f8c95a'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="city-shell">
+      <header class="city-header card">
+        <div>
+          <p class="eyebrow">主城</p>
+          <h1>人生副本 · Phase 2 / 移动端收边版</h1>
+          <p class="sub">这一版先把手机试玩的一屏重点收短：先知道现在在哪、先补什么、做完回哪里验收。</p>
+        </div>
+        <div class="resource-row">
+          <div class="resource">
+            <span>灵石</span>
+            <strong id="resource-spiritStone">1280</strong>
+          </div>
+          <div class="resource">
+            <span>抽卡券</span>
+            <strong id="resource-drawTickets">3</strong>
+          </div>
+          <div class="resource">
+            <span>材料</span>
+            <strong id="resource-materials">42</strong>
+          </div>
+        </div>
+      </header>
+
+      <section id="tab-home" class="tab-panel card active"></section>
+      <section id="tab-gacha" class="tab-panel card"></section>
+      <section id="tab-adventure" class="tab-panel card"></section>
+      <section id="tab-gear" class="tab-panel card"></section>
+      <section id="tab-boss" class="tab-panel card"></section>
+      <section id="tab-leaderboard" class="tab-panel card"></section>
+    </main>
+
+    <div id="ops-modal" class="modal-backdrop" hidden>
+      <div class="modal card" role="dialog" aria-modal="true" aria-labelledby="ops-modal-title">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">运营入口</p>
+            <h2 id="ops-modal-title" class="section-title">入口说明</h2>
+            <p id="ops-modal-sub" class="sub"></p>
+          </div>
+          <button type="button" id="ops-modal-close">关闭</button>
+        </div>
+        <div id="ops-modal-content" class="list"></div>
+      </div>
+    </div>
+
+    <div id="feedback-layer" class="feedback-layer" aria-live="polite" aria-atomic="false"></div>
+
+    <nav class="tab-nav">
+      <button class="tab-btn active" type="button" data-tab="home">Home</button>
+      <button class="tab-btn" type="button" data-tab="gacha">Gacha</button>
+      <button class="tab-btn" type="button" data-tab="adventure">Adventure</button>
+      <button class="tab-btn" type="button" data-tab="gear">Gear</button>
+      <button class="tab-btn" type="button" data-tab="boss">Boss</button>
+      <button class="tab-btn" type="button" data-tab="leaderboard">Rank</button>
+    </nav>
+
+    <script src="../phase1/game-config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

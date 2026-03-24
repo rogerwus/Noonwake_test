@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>人生副本</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="sky"></div>
+    <div class="stars"></div>
+
+    <main id="app" class="app-shell" data-screen="intro">
+      <section id="screen-intro" class="screen screen-active intro-screen" aria-labelledby="intro-title">
+        <div class="sigil"></div>
+        <div class="panel intro-panel">
+          <p class="kicker">命盘召唤式</p>
+          <h1 id="intro-title" class="title">人生副本</h1>
+          <p class="lead">输入生辰，召出你的命格，然后走完一局只属于你的短命运线。</p>
+          <div class="intro-tags">
+            <span>单人副本</span>
+            <span>9 个节点</span>
+            <span>2-4 分钟</span>
+          </div>
+          <button id="start-button" class="game-button primary large" type="button">开始召唤</button>
+        </div>
+      </section>
+
+      <section id="screen-ritual" class="screen ritual-screen" aria-hidden="true">
+        <div class="panel ritual-panel">
+          <div class="ritual-head">
+            <div>
+              <p class="kicker">第一幕</p>
+              <h2 class="section-title">生辰召唤</h2>
+            </div>
+            <button id="ritual-reset" class="text-button" type="button">重置</button>
+          </div>
+
+          <div class="ritual-slots">
+            <button class="ritual-slot active" data-slot="year" type="button">
+              <span>年</span>
+              <strong id="slot-year">未定</strong>
+            </button>
+            <button class="ritual-slot" data-slot="month" type="button">
+              <span>月</span>
+              <strong id="slot-month">未定</strong>
+            </button>
+            <button class="ritual-slot" data-slot="day" type="button">
+              <span>日</span>
+              <strong id="slot-day">未定</strong>
+            </button>
+            <button class="ritual-slot" data-slot="hour" type="button">
+              <span>时</span>
+              <strong id="slot-hour">未定</strong>
+            </button>
+          </div>
+
+          <div class="step-box">
+            <p id="step-counter" class="step-counter">第 1 步 / 4</p>
+            <h3 id="step-title" class="step-title">选择出生年</h3>
+            <p id="step-description" class="step-description">先定时间入口，再开启命盘。</p>
+          </div>
+
+          <div id="ritual-options" class="ritual-options"></div>
+
+          <div class="ritual-actions">
+            <button id="back-button" class="game-button ghost" type="button">上一步</button>
+            <button id="summon-button" class="game-button primary" type="button" disabled>命格降临</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-reveal" class="screen reveal-screen" aria-hidden="true">
+        <div class="flash-ring"></div>
+        <div class="panel reveal-panel">
+          <p class="kicker">第二幕</p>
+          <h2 class="section-title">角色显形</h2>
+          <div class="reveal-badge">
+            <span id="reveal-element" class="element-chip"></span>
+            <strong id="reveal-class" class="reveal-class"></strong>
+            <span id="reveal-en" class="reveal-en"></span>
+          </div>
+          <p id="reveal-pillars" class="reveal-pillars"></p>
+          <p id="reveal-summary" class="reveal-summary"></p>
+
+          <div class="reveal-grid">
+            <div class="mini-card">
+              <span>日主</span>
+              <strong id="reveal-daymaster"></strong>
+            </div>
+            <div class="mini-card">
+              <span>喜用</span>
+              <strong id="reveal-useful"></strong>
+            </div>
+            <div class="mini-card">
+              <span>忌神</span>
+              <strong id="reveal-taboo"></strong>
+            </div>
+            <div class="mini-card">
+              <span>天赋</span>
+              <strong id="reveal-skill"></strong>
+            </div>
+          </div>
+
+          <div id="reveal-stats" class="stats-grid"></div>
+
+          <div class="reveal-actions">
+            <button id="reveal-retry" class="game-button ghost" type="button">重召</button>
+            <button id="enter-run-button" class="game-button primary large" type="button">进入人生副本</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-run" class="screen run-screen" aria-hidden="true">
+        <div class="run-topbar">
+          <div>
+            <p class="kicker">第三幕</p>
+            <h2 class="section-title">人生副本</h2>
+          </div>
+          <div class="progress-wrap">
+            <span id="node-counter">1 / 9</span>
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+          </div>
+        </div>
+
+        <div class="hud panel">
+          <div class="hud-header">
+            <div>
+              <strong id="hud-class" class="hud-class"></strong>
+              <p id="hud-traits" class="hud-traits"></p>
+            </div>
+            <div class="hud-tags">
+              <span id="hud-useful"></span>
+              <span id="hud-taboo"></span>
+            </div>
+          </div>
+
+          <div class="resource-grid">
+            <div class="resource-card">
+              <div class="resource-label"><span>HP</span><strong id="resource-hp">0</strong></div>
+              <div class="resource-track"><div id="resource-hp-fill" class="resource-fill hp"></div></div>
+            </div>
+            <div class="resource-card">
+              <div class="resource-label"><span>MP</span><strong id="resource-mp">0</strong></div>
+              <div class="resource-track"><div id="resource-mp-fill" class="resource-fill mp"></div></div>
+            </div>
+            <div class="resource-card">
+              <div class="resource-label"><span>命势</span><strong id="resource-fortune">0</strong></div>
+              <div class="resource-track"><div id="resource-fortune-fill" class="resource-fill fortune"></div></div>
+            </div>
+          </div>
+
+          <div id="hud-stats" class="stats-grid compact"></div>
+        </div>
+
+        <div class="panel event-panel">
+          <div class="event-meta">
+            <span id="event-stage" class="event-stage"></span>
+            <span id="event-seed" class="event-seed"></span>
+          </div>
+          <h3 id="event-title" class="event-title"></h3>
+          <p id="event-text" class="event-text"></p>
+
+          <div id="feedback-box" class="feedback-box" aria-live="polite"></div>
+          <div id="choice-list" class="choice-list"></div>
+
+          <div class="event-footer">
+            <div id="floating-delta" class="floating-delta" aria-hidden="true"></div>
+            <button id="next-node-button" class="game-button primary" type="button" hidden>继续前行</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-ending" class="screen ending-screen" aria-hidden="true">
+        <div class="panel ending-panel">
+          <p class="kicker">终幕</p>
+          <h2 id="ending-title" class="section-title"></h2>
+          <p id="ending-text" class="ending-text"></p>
+
+          <div class="ending-grid">
+            <div class="mini-card">
+              <span>最终 HP</span>
+              <strong id="ending-hp"></strong>
+            </div>
+            <div class="mini-card">
+              <span>最终 MP</span>
+              <strong id="ending-mp"></strong>
+            </div>
+            <div class="mini-card">
+              <span>最终命势</span>
+              <strong id="ending-fortune"></strong>
+            </div>
+            <div class="mini-card">
+              <span>命格职业</span>
+              <strong id="ending-class"></strong>
+            </div>
+          </div>
+
+          <div id="ending-summary" class="ending-summary"></div>
+
+          <div class="reveal-actions">
+            <button id="replay-button" class="game-button primary large" type="button">再开一局</button>
+            <button id="resummon-button" class="game-button ghost" type="button">重新召唤命格</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./bazi-engine.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

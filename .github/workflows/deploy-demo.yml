@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: demo-deploy
+  group: demo-deploy-life-rpg
   cancel-in-progress: true
 
 jobs:
@@ -35,9 +35,8 @@ jobs:
 
       - name: Prepare app directory
         run: |
-          sudo mkdir -p "/opt/demo-apps/$APP_SLUG"
+          sudo mkdir -p "/opt/demo-apps/$APP_SLUG/runtime"
           sudo chown -R deploy:deploy "/opt/demo-apps/$APP_SLUG"
-          rm -rf "/opt/demo-apps/$APP_SLUG/site"
 
       - name: Write runtime env
         run: |
@@ -47,16 +46,28 @@ jobs:
           APP_DOMAIN=$APP_DOMAIN
           EOF
 
-      - name: Copy files
+      - name: Sync app files
         run: |
-          cp Dockerfile "/opt/demo-apps/$APP_SLUG/"
-          cp docker-compose.yml "/opt/demo-apps/$APP_SLUG/"
-          cp -r site "/opt/demo-apps/$APP_SLUG/"
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            --exclude '.tmp' \
+            --exclude 'backend/data/*.json' \
+            --exclude 'runtime' \
+            ./ "/opt/demo-apps/$APP_SLUG/"
+
+      - name: Ensure runtime state
+        run: |
+          mkdir -p "/opt/demo-apps/$APP_SLUG/runtime"
+          if [ ! -f "/opt/demo-apps/$APP_SLUG/runtime/state.json" ]; then
+            printf '{\n  "players": {}\n}\n' > "/opt/demo-apps/$APP_SLUG/runtime/state.json"
+          fi
 
       - name: Deploy
         run: |
           cd "/opt/demo-apps/$APP_SLUG"
-          docker compose --env-file .env up -d --remove-orphans
+          docker compose --env-file .env up -d --build --remove-orphans
 
       - name: Check container
         run: |
@@ -64,4 +75,4 @@ jobs:
 
       - name: Smoke test
         run: |
-          curl -fsS "http://127.0.0.1:$APP_PORT/" > /dev/null
+          curl -fsS "http://127.0.0.1:$APP_PORT/phase2/" > /dev/null

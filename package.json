@@ -1,0 +1,8 @@
+{
+  "name": "life-rpg",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check bazi-engine.js && node --check app.js && node --check phase1/game-config.js && node --check phase1/app.js && node --check phase2/app.js"
+  }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life RPG Phase 1 Prototype</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1826'/%3E%3Cpath d='M20 18h8v28h16v-8h8v16H20z' fill='%23f8c95a'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Life RPG · Phase 1 单机核心验证版</h1>
+      <section class="panel">
+        <h2>1) 命格生成</h2>
+        <div class="form-grid">
+          <label>年 <input id="birth-year" type="number" min="1950" max="2030" value="1995" /></label>
+          <label>月 <input id="birth-month" type="number" min="1" max="12" value="8" /></label>
+          <label>日 <input id="birth-day" type="number" min="1" max="31" value="21" /></label>
+          <label>时辰
+            <select id="birth-hour"></select>
+          </label>
+        </div>
+        <button id="btn-generate">生成命格并开局</button>
+        <pre id="fate-output" class="output"></pre>
+      </section>
+
+      <section class="panel">
+        <h2>2) 数值与配装</h2>
+        <div id="player-core" class="kv"></div>
+        <h3>装备槽</h3>
+        <div id="equipment-slots" class="list"></div>
+        <h3>背包</h3>
+        <div id="inventory-list" class="list"></div>
+      </section>
+
+      <section class="panel">
+        <h2>3) 自动战斗 / 掉落 / Boss</h2>
+        <div class="battle-controls">
+          <label>地图
+            <select id="map-select"></select>
+          </label>
+          <button id="btn-fight" disabled>开始战斗</button>
+        </div>
+        <div id="return-entry" class="return-entry"></div>
+        <div id="battle-summary" class="output"></div>
+        <h3>战斗日志</h3>
+        <div id="battle-log" class="log"></div>
+        <h3>掉落</h3>
+        <div id="drop-list" class="list"></div>
+      </section>
+    </main>
+
+    <script src="../bazi-engine.js"></script>
+    <script src="./game-config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
