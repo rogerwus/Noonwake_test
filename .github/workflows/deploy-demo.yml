@@ -38,14 +38,6 @@ jobs:
           sudo mkdir -p "/opt/demo-apps/$APP_SLUG/runtime"
           sudo chown -R deploy:deploy "/opt/demo-apps/$APP_SLUG"
 
-      - name: Write runtime env
-        run: |
-          cat > "/opt/demo-apps/$APP_SLUG/.env" <<EOF
-          APP_SLUG=$APP_SLUG
-          APP_PORT=$APP_PORT
-          APP_DOMAIN=$APP_DOMAIN
-          EOF
-
       - name: Sync app files
         run: |
           rsync -a --delete \
@@ -53,9 +45,18 @@ jobs:
             --exclude '.github' \
             --exclude 'node_modules' \
             --exclude '.tmp' \
+            --exclude '.env' \
             --exclude 'backend/data/*.json' \
             --exclude 'runtime' \
             ./ "/opt/demo-apps/$APP_SLUG/"
+
+      - name: Write runtime env
+        run: |
+          cat > "/opt/demo-apps/$APP_SLUG/.env" <<EOF
+          APP_SLUG=$APP_SLUG
+          APP_PORT=$APP_PORT
+          APP_DOMAIN=$APP_DOMAIN
+          EOF
 
       - name: Ensure runtime state
         run: |
