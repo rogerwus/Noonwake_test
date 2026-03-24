@@ -38,6 +38,7 @@ npm start
 - 旧版界面：`http://localhost:8787/`
 - Phase 1 单机核心验证版：`http://localhost:8787/phase1/`
 - Phase 2 / M3 运营骨架版：`http://localhost:8787/phase2/`
+- Phase 3 / Phaser 主城壳：`http://localhost:8787/phase3/`
 
 服务端本地数据会自动写到 `backend/data/state.json`。
 
@@ -765,3 +766,12 @@ curl -H 'X-Player-Id: smoke-check' http://localhost:8787/leaderboard/daily-boss
 - `phase2/leaderboard` 的晒图成品卡应能看到榜单名、名次、成绩、差距、build 标签、亮点摘要、今日 Boss / 当日亮点、一句话总结，以及清晰区分 `当前真实成绩 / 参考样本` 的可复制文案；当前仍仅做本地导出与截图传播，不做真实外部分享
 - `phase2/home` / `phase2/gear` / `phase2/boss` 的“冲榜回路”卡应明确告诉你当前最值得回看的榜单、离下一名还差多少、先补什么、下一站去哪刷
 - 若想本地模拟多人榜单，可用不同的 `X-Player-Id` 重复执行 `POST /player/sync`、`POST /gear/equip` 与 `POST /gear/enhance`
+
+## 2026-03-24 Phaser 主城壳首刀
+
+- 新增 `phase3/` Phaser 3 网页游戏壳，并由现有 `server.js` 直接托管到 `/phase3/`。
+- 第一屏不再是纯 DOM 卡片流，而是 Phaser 驱动的主城舞台：会直接展示角色 / 命格 / 当前 build / 今日 Boss / 当前主线。
+- 新壳内置 4 步新手任务链：`抽卡 -> 换装/强化 -> Adventure/Boss -> Rank 验收`，当前步骤会高亮，并能直接跳转到现有 `phase2` 流程。
+- 与现有系统保持最小连接：通过 `/player/state` 消费后端状态，通过 `/analytics/track` 记录榜单验收等引导节点，不推翻旧后端和 `phase2`。
+- 为了保持工程轻量，这一刀直接使用 `Phaser 3 UMD` 浏览器入口，不引入额外重型前端框架或构建链。
+

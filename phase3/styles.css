@@ -1,0 +1,52 @@
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(40, 83, 175, 0.28), transparent 34%),
+    radial-gradient(circle at 20% 18%, rgba(53, 208, 255, 0.16), transparent 22%),
+    linear-gradient(180deg, #050814 0%, #090f1f 52%, #04070f 100%);
+  color: #f4f7ff;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+#game-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+#game-root {
+  width: 100vw;
+  height: 100vh;
+}
+
+#game-root canvas {
+  display: block;
+}
+
+.fallback {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  max-width: min(92vw, 760px);
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 211, 114, 0.45);
+  border-radius: 14px;
+  background: rgba(9, 14, 28, 0.84);
+  color: #f7e2a4;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(12px);
+  z-index: 4;
+}
+
+.fallback-static {
+  top: 24px;
+  bottom: auto;
+}

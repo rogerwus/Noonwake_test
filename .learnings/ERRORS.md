@@ -102,3 +102,10 @@
 - Failure: a broad multi-file Python replacement script partially landed `phase2/index.html` / `phase2/styles.css`, then failed on the exact `renderDailyBossTile` / boss hero anchor inside `phase2/app.js` before JS and `README.md` edits were written.
 - Fix: log immediately, inspect partial diff first, then retry with smaller targeted hunks for `phase2/app.js` render helpers / feedback hooks and a separate `README.md` patch.
 - See Also: `phase2/index.html`, `phase2/styles.css`, `phase2/app.js`, `README.md`
+
+## 2026-03-24 phase3 smoke playwright browser missing
+- Status: fixed in same session
+- Context: `life-rpg` Phaser 主城壳首刀 validation
+- Failure: `playwright screenshot` against local `/phase3/` failed because the host Playwright CLI had no browser binary at `~/Library/Caches/ms-playwright/.../chrome-headless-shell`.
+- Fix: log immediately, do not assume Playwright browsers are preinstalled, and switch to browser-free checks unless explicit approval is given to run `playwright install` for screenshot validation.
+- See Also: `.learnings/ERRORS.md`, `phase3/app.js`, `server.js`

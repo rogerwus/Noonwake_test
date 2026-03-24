@@ -4905,6 +4905,9 @@ function resolveStaticPath(pathname) {
   if (cleanPath === "/phase2" || cleanPath === "/phase2/") {
     return path.join(ROOT_DIR, "phase2", "index.html");
   }
+  if (cleanPath === "/phase3" || cleanPath === "/phase3/") {
+    return path.join(ROOT_DIR, "phase3", "index.html");
+  }
   return path.join(ROOT_DIR, cleanPath.replace(/^\/+/, ""));
 }
 
